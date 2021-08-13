@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>掘金-沸点</title>
+    <style>
+      html,
+      body,
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        overflow: auto;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <span id="test">test</span>
+    <div id="list">1234</div>
+    <img
+      class="loadingImg"
+      src="https://img.zcool.cn/community/01deed576019060000018c1bd2352d.gif"
+    />
+
+    <div onclick="prePage()">上一页</div>
+    <div onclick="nextPage()">下一页</div>
+    <script>
+      function test(val = e) {
+        console.log(
+          val.target.attributes,
+          "val",
+          val.target.attributes.msgid,
+          val.target.attributes.msgid.value
+        );
+      }
+      let testText = document.getElementById("test");
+      const qq = { a: 1 };
+      const temp = JSON.stringify(qq);
+      console.log(temp);
+      testText.innerHTML = `<span class='comment'  msgid=11>asasasasas</span>`;
+      document.querySelectorAll(".comment").forEach((el) => {
+        el.onclick = test;
+      });
+      let pageNum = 0;
+      let vscode = acquireVsCodeApi();
+      console.log("init---------");
+      function init() {
+        vscode.postMessage({ page: 0 });
+      }
+      function formatSeconds(value) {
+        var theTime = parseInt(value); // 需要转换的时间秒
+        var theTime1 = 0; // 分
+        var theTime2 = 0; // 小时
+        var theTime3 = 0; // 天
+        if (theTime > 60) {
+          theTime1 = parseInt(theTime / 60);
+          theTime = parseInt(theTime % 60);
+          if (theTime1 > 60) {
+            theTime2 = parseInt(theTime1 / 60);
+            theTime1 = parseInt(theTime1 % 60);
+            if (theTime2 > 24) {
+              //大于24小时
+              theTime3 = parseInt(theTime2 / 24);
+              theTime2 = parseInt(theTime2 % 24);
+            }
+          }
+        }
+        var result = "";
+        if (theTime3 > 0) {
+          result = parseInt(theTime3) + "天";
+        }
+        if (theTime2 > 0 && !theTime3) {
+          result = parseInt(theTime2) + "小时";
+        }
+        if (theTime1 > 0 && !theTime3 && !theTime2) {
+          result = parseInt(theTime1) + "分";
+        }
+        return result;
+      }
+      function prePage() {
+        if (pageNum === 0) {
+          vscode.postMessage({ text: "已经是第一页了哦~" });
+          return;
+        }
+        vscode.postMessage({ page: --pageNum });
+      }
+      function nextPage() {
+        vscode.postMessage({ page: ++pageNum });
+      }
+
+      window.addEventListener("message", (event) => {
+        const message = event.data.data || [];
+        let listStr = "";
+        message.forEach((item) => {
+          const { author_user_info: user, msg_Info: info, topic } = item;
+          const newTime = (new Date().getTime() - info.mtime * 1000) / 1000;
+          listStr += `<div style="display: flex;margin-bottom:10px" onclick="nextPage(${newTime})">
+                         <img src=${
+                           user.avatar_large
+                         } style="width: 60px;height: 60px;border-radius:50%"/>
+                         <div style="margin-left:10px;">
+                             <div style="font-size: 1.25rem;font-weight: 600;color: #2e3135;">${
+                               user.user_name
+                             }</div>
+                             <div>${formatSeconds(newTime)}</div>
+                             <div style="padding:10px 0">${info.content}</div>
+                             <div>${(info.pic_list || [])
+                               .map(
+                                 (el) =>
+                                   `<img style="width:200px;height:180px;margin-left:10px" src=${el} />`
+                               )
+                               .join("")}</div>
+                             <div style="color:#1d7dfa">#${topic.title}#</div>
+                         </div>
+                     </div>`;
+        });
+        list.innerHTML = listStr;
+      });
+    </script>
+  </body>
+</html>
