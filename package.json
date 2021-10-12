@@ -1,28 +1,42 @@
 {
 	"name": "fishfish",
-	"displayName": "fishfish",
-	"description": "",
-	"version": "0.0.1",
+	"displayName": "掘金",
+	"description": " A simple juejin in vscode",
+	"publisher": "yang08262021",
+	"version": "0.0.2",
+	"icon": "icon/true.jpeg",
 	"engines": {
-		"vscode": "^1.58.0"
+		"vscode": "^1.59.0"
 	},
 	"categories": [
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:fish.start",
-		"onCommand:fish.test"
+		"onCommand:fish.read",
+		"onCommand:fish.juejin"
 	],
+	"keywords": [
+        "juejin",
+        "掘金",
+        "juej",
+        "j",
+		"fish",
+		"fishfish",
+		"fis"
+    ],
+	"repository": {
+        "url": ""
+    },
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "fish.start",
-				"title": "fish"
+				"command": "fish.read",
+				"title": "read"
 			},
 			{
-				"command": "fish.test",
-				"title": "test"
+				"command": "fish.juejin",
+				"title": "juejin"
 			}
 		]
 	},

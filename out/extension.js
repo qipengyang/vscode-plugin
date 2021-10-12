@@ -1,32 +1,33 @@
-import * as vscode from 'vscode';
-import * as axios from "axios";
-import { postMain,postComment } from './service';
-import * as path from "path";
-
-let cursorArr:any = ['0'];
-export function activate(context: vscode.ExtensionContext) {
-	
-	context.subscriptions.push(
-		vscode.commands.registerCommand('fish.read', () => {
-		  // 创建并显示新的webview
-		  const panel = vscode.window.createWebviewPanel(
-			'read', // 只供内部使用，这个webview的标识
-			'index.ts', // 给用户显示的面板标题
-			vscode.ViewColumn.One, // 给新的webview面板一个编辑器视图
-			{ enableScripts: true,
-		      retainContextWhenHidden: true,
-			} // Webview选项。我们稍后会用上
-		  );
-		  panel.iconPath = vscode.Uri.file(
-			path.resolve(context.extensionPath, "./icon/icon.png")
-		  );
-		panel.webview.onDidReceiveMessage(
-			async (message) => {
-			},
-			undefined,
-			context.subscriptions
-		  );
-		  panel.webview.html = `
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deactivate = exports.activate = void 0;
+const vscode = require("vscode");
+const service_1 = require("./service");
+const path = require("path");
+let cursorArr = ['0'];
+function activate(context) {
+    context.subscriptions.push(vscode.commands.registerCommand('fish.read', () => {
+        // 创建并显示新的webview
+        const panel = vscode.window.createWebviewPanel('read', // 只供内部使用，这个webview的标识
+        'index.ts', // 给用户显示的面板标题
+        vscode.ViewColumn.One, // 给新的webview面板一个编辑器视图
+        { enableScripts: true,
+            retainContextWhenHidden: true,
+        } // Webview选项。我们稍后会用上
+        );
+        panel.iconPath = vscode.Uri.file(path.resolve(context.extensionPath, "./icon/icon.png"));
+        panel.webview.onDidReceiveMessage((message) => __awaiter(this, void 0, void 0, function* () {
+        }), undefined, context.subscriptions);
+        panel.webview.html = `
           <!DOCTYPE html>
 							<html lang="en">
 							<head>
@@ -51,50 +52,42 @@ export function activate(context: vscode.ExtensionContext) {
 								<iframe src="https://weread.qq.com/"/>
 							</body>
 							</html>`;
-		})
-	  );
-	  context.subscriptions.push(
-		vscode.commands.registerCommand('fish.juejin', () => {
-		  // 创建并显示新的webview
-		  const panelTest = vscode.window.createWebviewPanel(
-			'juejin', // 只供内部使用，这个webview的标识
-			'index.ts', // 给用户显示的面板标题
-			vscode.ViewColumn.One, // 给新的webview面板一个编辑器视图
-			{ enableScripts: true,
-		      retainContextWhenHidden: true,
-			} // Webview选项。我们稍后会用上
-		  );
-		  panelTest.iconPath = vscode.Uri.file(
-			path.resolve(context.extensionPath, "./icon/icon.png")
-		  );
-		panelTest.webview.onDidReceiveMessage(
-			async (message) => {
-             if (message.text) {
-				vscode.window.showWarningMessage(message.text);
-				return;
-			 }
-        let res:any={};
-		if (message.refresh) {
-			cursorArr = ['0'];
-		};
-		switch(message.type) {
-			case 'comment':
-				await postComment(message.id,panelTest.webview,message.cursor);
-				break;
-			case 'next':
-				res = await postMain(cursorArr[message.page],panelTest.webview,message.category);
-				cursorArr.push(res.cursor);
-				break;
-		    case 'pre':
-				res = await postMain(cursorArr[message.page],panelTest.webview,message.category);
-				cursorArr.pop();
-				break;
-		}
-			},
-			undefined,
-			context.subscriptions
-		  );
-		  panelTest.webview.html = `
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand('fish.juejin', () => {
+        // 创建并显示新的webview
+        const panelTest = vscode.window.createWebviewPanel('juejin', // 只供内部使用，这个webview的标识
+        'index.ts', // 给用户显示的面板标题
+        vscode.ViewColumn.One, // 给新的webview面板一个编辑器视图
+        { enableScripts: true,
+            retainContextWhenHidden: true,
+        } // Webview选项。我们稍后会用上
+        );
+        panelTest.iconPath = vscode.Uri.file(path.resolve(context.extensionPath, "./icon/icon.png"));
+        panelTest.webview.onDidReceiveMessage((message) => __awaiter(this, void 0, void 0, function* () {
+            if (message.text) {
+                vscode.window.showWarningMessage(message.text);
+                return;
+            }
+            let res = {};
+            if (message.refresh) {
+                cursorArr = ['0'];
+            }
+            ;
+            switch (message.type) {
+                case 'comment':
+                    yield service_1.postComment(message.id, panelTest.webview, message.cursor);
+                    break;
+                case 'next':
+                    res = yield service_1.postMain(cursorArr[message.page], panelTest.webview, message.category);
+                    cursorArr.push(res.cursor);
+                    break;
+                case 'pre':
+                    res = yield service_1.postMain(cursorArr[message.page], panelTest.webview, message.category);
+                    cursorArr.pop();
+                    break;
+            }
+        }), undefined, context.subscriptions);
+        panelTest.webview.html = `
           <!DOCTYPE html>
 							<html lang="en">
 							<head>
@@ -396,13 +389,13 @@ export function activate(context: vscode.ExtensionContext) {
 						  </script>
 							</body>
 							</html>`;
-		})
-	  );
+    }));
 }
-
+exports.activate = activate;
 // this method is called when your extension is deactivated
-export function deactivate() {}
-function data(arg0: string, data: any, arg2: {}) {
-	throw new Error('Function not implemented.');
+function deactivate() { }
+exports.deactivate = deactivate;
+function data(arg0, data, arg2) {
+    throw new Error('Function not implemented.');
 }
-
+//# sourceMappingURL=extension.js.map
